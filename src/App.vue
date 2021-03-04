@@ -2,11 +2,34 @@
   <div class="container">
     <global-header :user="currentUser"></global-header>
     <column-list :list="testData"></column-list>
+    <form action="">
+      <div class="mb-3">
+        <label for="exampleInputEmail1" class="form-label">邮箱地址</label>
+        <input
+          type="email"
+          class="form-control"
+          id="exampleInputEmail1"
+          v-model="emailRef.val"
+          @blur="validateEmail"
+        />
+        <div class="form-text" v-if="emailRef.error">
+          {{ emailRef.message }}
+        </div>
+      </div>
+      <div class="mb-3">
+        <label for="exampleInputPassword1" class="form-label">密码</label>
+        <input
+          type="password"
+          class="form-control"
+          id="exampleInputPassword1"
+        />
+      </div>
+    </form>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
+import { defineComponent, reactive } from "vue";
 import "bootstrap/dist/css/bootstrap.min.css";
 import ColumnList, { ColumnProps } from "./components/ColumnList.vue";
 import GlobalHeader, { UserProps } from "./components/GlobalHeader.vue";
@@ -33,6 +56,7 @@ const testData: ColumnProps[] = [
     description: "这个是test3的专栏，有一段非常有意思的简介，可以更新一下哦"
   }
 ];
+const emailReg = /^(\w)+(\.\w+)*@(\w)+((\.\w{2,3}){1,3})$/;
 export default defineComponent({
   name: "App",
   components: {
@@ -40,9 +64,25 @@ export default defineComponent({
     GlobalHeader
   },
   setup() {
+    const emailRef = reactive({
+      val: "",
+      error: false,
+      message: ""
+    });
+    const validateEmail = () => {
+      if (emailRef.val.trim() === "") {
+        emailRef.error = true;
+        emailRef.message = "can not be empty";
+      } else if (!emailReg.test(emailRef.val)) {
+        emailRef.error = true;
+        emailRef.message = "shoule be valid email format";
+      }
+    };
     return {
       testData,
-      currentUser
+      currentUser,
+      emailRef,
+      validateEmail
     };
   }
 });

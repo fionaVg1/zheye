@@ -3,31 +3,45 @@
     <input
       type="text"
       class="form-control"
+      autocomplete="off"
       :class="{ 'is-invalid': inputRef.error }"
-      v-model="inputRef.val"
+      :value="inputRef.val"
       @blur="validateInput"
+      @input="updateValue"
+      v-bind="$attrs"
     />
-    <span v-if="inputRef.error" class="invalid-feedback">{{inputRef.message}}</span>
+    <span v-if="inputRef.error" class="invalid-feedback">{{
+      inputRef.message
+    }}</span>
   </div>
 </template>
 <script lang="ts">
-import { defineComponent, reactive, PropType } from "vue";
+import { defineComponent, reactive, PropType, onMounted } from "vue";
+import { emitter } from "./ValidateForm.vue";
 const emailReg = /^(\w)+(\.\w+)*@(\w)+((\.\w{2,3}){1,3})$/;
+const passwordReg = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*#?&]{8,}$/;
 interface RuleProp {
-  type: "required" | "email";
+  type: "required" | "email" | "password";
   message: string;
 }
 export type RulesProp = RuleProp[];
 export default defineComponent({
   props: {
-    rules: Array as PropType<RulesProp>
+    rules: Array as PropType<RulesProp>,
+    modelValue: String
   },
-  setup(props) {
+  inheritAttrs: false,
+  setup(props, context) {
     const inputRef = reactive({
-      val: "",
+      val: props.modelValue || "",
       error: false,
       message: ""
     });
+    const updateValue = (e: KeyboardEvent) => {
+      const targetValue = (e.target as HTMLInputElement).value;
+      inputRef.val = targetValue;
+      context.emit("update:modelValue", targetValue);
+    };
     const validateInput = () => {
       if (props.rules) {
         const allPassed = props.rules.every(rule => {
@@ -40,6 +54,9 @@ export default defineComponent({
             case "email":
               passed = emailReg.test(inputRef.val);
               break;
+            case "password":
+              passed = passwordReg.test(inputRef.val);
+              break;
             default:
               break;
           }
@@ -48,9 +65,13 @@ export default defineComponent({
         inputRef.error = !allPassed;
       }
     };
+    onMounted(() => {
+      emitter.emit("form-item-created",inputRef.val);
+    });
     return {
       inputRef,
-      validateInput
+      validateInput,
+      updateValue
     };
   }
 });

@@ -63,10 +63,12 @@ export default defineComponent({
           return passed;
         });
         inputRef.error = !allPassed;
+        return allPassed;
       }
+      return true;
     };
     onMounted(() => {
-      emitter.emit("form-item-created",inputRef.val);
+      emitter.emit("form-item-created", validateInput);
     });
     return {
       inputRef,

@@ -1,9 +1,11 @@
+//专栏
 export interface ColumnProps {
   id: number;
   title: string;
   avatar?: string;
   description: string;
 }
+//文章，专栏和文章是一对多的关系
 export interface PostProps {
   id: number;
   title: string;

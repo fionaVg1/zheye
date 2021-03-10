@@ -4,17 +4,22 @@
   </div>
 </template>
 <script lang="ts">
-import { defineComponent } from "vue";
+import { defineComponent, computed } from "vue";
+import { useStore } from "vuex";
+import { GlobalDataProps } from "../store";
 import ColumnList from "../components/ColumnList.vue";
-import { testData,ColumnProps } from "@/testData";
-const listData: ColumnProps[] = testData;
+
 export default defineComponent({
   components: {
     ColumnList
   },
   setup() {
+    const store = useStore<GlobalDataProps>();
+    const list = computed(() => store.state.columns);
+    const biggerColumnsLen = computed(() => store.getters.biggerColumnsLen);
     return {
-      listData
+      listData: list,
+      biggerColumnsLen
     };
   }
 });

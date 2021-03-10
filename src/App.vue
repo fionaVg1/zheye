@@ -2,19 +2,16 @@
   <div class="container">
     <global-header :user="currentUser"></global-header>
     <router-view></router-view>
-    <global-footer/>
+    <global-footer />
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from "vue";
+import { defineComponent, computed } from "vue";
+import { useStore } from "vuex";
 import "bootstrap/dist/css/bootstrap.min.css";
-import GlobalHeader, { UserProps } from "./components/GlobalHeader.vue";
-import GlobalFooter from './components/GlobalFooter.vue';
-const currentUser: UserProps = {
-  isLogin: false,
-  name: "兔子小姐"
-};
+import GlobalHeader from "./components/GlobalHeader.vue";
+import GlobalFooter from "./components/GlobalFooter.vue";
 
 export default defineComponent({
   name: "App",
@@ -23,6 +20,8 @@ export default defineComponent({
     GlobalFooter
   },
   setup() {
+    const store = useStore();
+    const currentUser = computed(() => store.state.user);
     return {
       currentUser
     };

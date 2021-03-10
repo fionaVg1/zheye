@@ -1,5 +1,5 @@
 <template>
-  <form action="" class="validate-form-container">
+  <form action="" class="validate-form-container" autocomplete="off">
     <slot name="default"></slot>
     <div class="submit-area" @click.prevent="submitForm">
       <slot name="submit">
@@ -9,7 +9,7 @@
   </form>
 </template>
 <script lang="ts">
-import { defineComponent, onUnmounted, registerRuntimeCompiler } from "vue";
+import { defineComponent, onUnmounted } from "vue";
 import mitt, { Handler } from "mitt";
 export const emitter = mitt();
 type validateFunc = () => boolean;

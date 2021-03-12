@@ -31,6 +31,7 @@ import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 import ValidateInput, { RulesProp } from "../components/ValidateInput.vue";
 import ValidateForm from "@/components/ValidateForm.vue";
+import createMessage from "@/components/createMessage";
 export default defineComponent({
   name: "Login",
   components: {
@@ -40,26 +41,33 @@ export default defineComponent({
   setup() {
     const store = useStore();
     const router = useRouter();
-    const emailVal = ref("");
-    const passwordVal = ref("");
+    const emailVal = ref("111@test.com");
+    const passwordVal = ref("111111");
     const emailRules: RulesProp = [
       { type: "required", message: "电子邮箱地址不能为空" },
       { type: "email", message: "请输入正确的电子邮箱格式" }
     ];
     const passwordRules: RulesProp = [
-      { type: "required", message: "密码不能为空" },
-      {
-        type: "password",
-        message:
-          "请输入正确的密码格式，至少8个字符，至少1个字母，1个数字和1个特殊字符"
-      }
+      { type: "required", message: "密码不能为空" }
     ];
     const onFormSubmit = (result: boolean) => {
       console.log(result);
       if (result) {
-        router.push("/");
-        store.commit("login");
-        // router.push({ name: "column", params: { id: 1 } });
+        const payload = {
+          email: emailVal.value,
+          password: passwordVal.value
+        };
+        store
+          .dispatch("loginAndFetch", payload)
+          .then(() => {
+            createMessage("登录成功 2秒后跳转首页", "success");
+            setTimeout(() => {
+              router.push("/");
+            }, 2000);
+          })
+          .catch(e => {
+            console.log(e);
+          });
       }
     };
     return {

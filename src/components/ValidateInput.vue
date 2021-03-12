@@ -32,8 +32,11 @@ import { emitter } from "./ValidateForm.vue";
 const emailReg = /^(\w)+(\.\w+)*@(\w)+((\.\w{2,3}){1,3})$/;
 const passwordReg = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*#?&]{8,}$/;
 interface RuleProp {
-  type: "required" | "email" | "password";
-  message: string;
+  type: "required" | "email" | "password" | "custom" | "range";
+  message?: string;
+  validator?: () => boolean;
+  min?: { length: number; message: string };
+  max?: { length: number; message: string };
 }
 export type RulesProp = RuleProp[];
 export type TagType = "input" | "textarea";
@@ -60,18 +63,34 @@ export default defineComponent({
     };
     const validateInput = () => {
       if (props.rules) {
+        const value = inputRef.val;
         const allPassed = props.rules.every(rule => {
           let passed = true;
-          inputRef.message = rule.message;
+          inputRef.message = rule.message || "";
           switch (rule.type) {
             case "required":
-              passed = inputRef.val.trim() != "";
+              passed = value.trim() != "";
               break;
             case "email":
-              passed = emailReg.test(inputRef.val);
+              passed = emailReg.test(value);
               break;
+            case "range": {
+              const { min, max } = rule;
+              if (min && value.trim().length < min.length) {
+                passed = false;
+                inputRef.message = min.message;
+              }
+              if (max && value.trim().length > max.length) {
+                passed = false;
+                inputRef.message = max.message;
+              }
+              break;
+            }
             case "password":
-              passed = passwordReg.test(inputRef.val);
+              passed = passwordReg.test(value);
+              break;
+            case "custom":
+              passed = rule.validator ? rule.validator() : true;
               break;
             default:
               break;

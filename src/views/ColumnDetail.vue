@@ -27,11 +27,11 @@
   </div>
 </template>
 <script lang="ts">
-import { defineComponent, computed, onMounted } from "vue";
-import { useRoute } from "vue-router";
-import { useStore } from "vuex";
-import { GlobalDataProps } from "../store";
-import PostList from "@/components/PostList.vue";
+import { defineComponent, computed, onMounted } from 'vue';
+import { useRoute } from 'vue-router';
+import { useStore } from 'vuex';
+import { GlobalDataProps } from '../store';
+import PostList from '@/components/PostList.vue';
 export default defineComponent({
   components: {
     PostList
@@ -41,8 +41,8 @@ export default defineComponent({
     const store = useStore<GlobalDataProps>();
     const currentId = route.params.id;
     onMounted(() => {
-      store.dispatch("fetchColumn", currentId);
-      store.dispatch("fetchPosts", currentId);
+      store.dispatch('fetchColumn', currentId);
+      store.dispatch('fetchPosts', currentId);
     });
     const column = computed(() => store.getters.getColumnById(currentId));
     const list = computed(() => store.getters.getPostsByCid(currentId));

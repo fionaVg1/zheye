@@ -62,6 +62,7 @@ import { PostProps } from "@/store";
 import ValidateInput, { RulesProp } from "../components/ValidateInput.vue";
 import ValidateForm from "../components/ValidateForm.vue";
 import { useStore } from "vuex";
+import axios from "axios";
 export default defineComponent({
   name: "CreatePost",
   components: {
@@ -98,7 +99,6 @@ export default defineComponent({
         }
       }
     };
-
     return {
       titleRules,
       titleVal,
